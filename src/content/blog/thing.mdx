@@ -1,0 +1,51 @@
+---
+title: This is a test blog post.
+publishedAt: 2024-04-11
+---
+
+import CodeSnippet from "../../components/CodeSnippet.astro";
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo urna molestie at elementum eu facilisis. A lacus vestibulum sed arcu. Egestas sed sed risus pretium quam vulputate dignissim. Tellus orci ac auctor augue mauris augue. Blandit libero volutpat sed cras. Augue mauris augue neque gravida in fermentum. Nunc sed velit dignissim sodales ut eu. Amet facilisis magna etiam tempor orci. Viverra vitae congue eu consequat.
+
+Elementum tempus egestas sed sed risus. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Ipsum consequat nisl vel pretium lectus quam id. Sit amet facilisis magna etiam tempor orci eu. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi. Pellentesque sit amet porttitor eget dolor morbi non arcu.
+
+<CodeSnippet>
+
+```go
+func (uc *studySessionUseCase) GetForStudySet(ctx context.Context, userID string, studySetID int64) (*domain.StudySession, error) {
+	studySessionRepo := uc.datastore.GetStudySessionRepo()
+
+    studySession, err := studySessionRepo.GetForStudySet(ctx, userID, studySetID)
+    if err != nil {
+    	return nil, fmt.Errorf("%w: failed to get the study session: %w", ErrRepoFailed, err)
+    }
+    if studySession == nil {
+    	return nil, &ErrNotFound{
+    		Resource: StudySessionResource,
+    	}
+    }
+
+    return studySession, nil
+}
+```
+
+</CodeSnippet>
+
+A cras semper auctor neque vitae tempus quam. Leo vel fringilla est ullamcorper eget nulla facilisi.
+
+<CodeSnippet>
+
+```sql
+CREATE TABLE definition
+(
+	`id`           INT AUTO_INCREMENT NOT NULL,
+	`study_set_id` INT                NOT NULL,
+	`phrase`       VARCHAR(256)       NOT NULL,
+	`meaning`      VARCHAR(256)       NOT NULL,
+	`sentences`    JSON               NOT NULL,
+
+	PRIMARY KEY (`id`)
+);
+```
+
+</CodeSnippet>

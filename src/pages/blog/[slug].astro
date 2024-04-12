@@ -1,0 +1,39 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import { cn, dateFormatter } from "../../lib/utils";
+
+export const getStaticPaths = (async () => {
+  const blog = await getCollection("blog");
+
+  return blog.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+
+const { Content, remarkPluginFrontmatter } = await entry.render();
+---
+
+<Layout title={entry.data.title}>
+  <article
+    class={cn(
+      "prose prose-zinc",
+      "prose-headings:text-xl prose-headings:font-medium prose-headings:mb-0",
+      "prose-p:text-zinc-600"
+    )}
+  >
+    <header>
+      <h1>{entry.data.title}</h1>
+      <div class="flex gap-2 text-zinc-500 text-sm">
+        <span>{dateFormatter.format(entry.data.publishedAt)}</span>
+        &bull;
+        <span>{remarkPluginFrontmatter.minutesToRead}</span>
+      </div>
+    </header>
+    <Content />
+  </article>
+</Layout>

@@ -1,0 +1,25 @@
+---
+import { dateFormatter } from "../../lib/utils";
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+
+const blog = await getCollection("blog");
+---
+
+<Layout title="Blog">
+  <ul>
+    <li>
+      {
+        blog.map((entry) => (
+          <a href={`/blog/${entry.slug}`}>
+            <span class="text-zinc-400">
+              {dateFormatter.format(entry.data.publishedAt)}
+            </span>
+            &nbsp;
+            {entry.data.title}
+          </a>
+        ))
+      }
+    </li>
+  </ul>
+</Layout>
