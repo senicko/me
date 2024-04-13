@@ -7,19 +7,20 @@ const blog = await getCollection("blog");
 ---
 
 <Layout title="Blog">
+  <h1 class="font-medium text-zinc-900">Blog</h1>
   <ul>
-    <li>
-      {
-        blog.map((entry) => (
+    {
+      blog.map((entry) => (
+        <li class="py-2">
           <a href={`/blog/${entry.slug}`}>
             <span class="text-zinc-400">
-              {dateFormatter.format(entry.data.publishedAt)}
+              {dateFormatter.format(entry.data.pubDate)}
             </span>
             &nbsp;
             {entry.data.title}
           </a>
-        ))
-      }
-    </li>
+        </li>
+      ))
+    }
   </ul>
 </Layout>

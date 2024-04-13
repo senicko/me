@@ -29,7 +29,7 @@ const { Content, remarkPluginFrontmatter } = await entry.render();
     <header>
       <h1>{entry.data.title}</h1>
       <div class="flex gap-2 text-zinc-500 text-sm">
-        <span>{dateFormatter.format(entry.data.publishedAt)}</span>
+        <span>{dateFormatter.format(entry.data.pubDate)}</span>
         &bull;
         <span>{remarkPluginFrontmatter.minutesToRead}</span>
       </div>

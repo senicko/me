@@ -106,6 +106,7 @@ const siteTheme = {
 // https://astro.build/config
 export default defineConfig({
   integrations: [mdx(), tailwind()],
+  site: "https://senicko.me",
   markdown: {
     remarkPlugins: [remarkReadingTime],
     shikiConfig: {
