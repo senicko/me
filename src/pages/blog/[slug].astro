@@ -14,21 +14,22 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths;
 
 const { entry } = Astro.props;
-
 const { Content, remarkPluginFrontmatter } = await entry.render();
 ---
 
 <Layout title={entry.data.title}>
   <article
     class={cn(
-      "prose prose-zinc",
-      "prose-headings:text-xl prose-headings:font-medium prose-headings:mb-0",
-      "prose-p:text-zinc-600"
+      "prose prose-zinc t-16",
+      "prose-headings:text-xl prose-headings:font-medium prose-headings:my-[1.5em]",
+      "prose-p:text-zinc-600 prose-p:my-[1.5em]",
+      "prose-strong:text-zinc-900 prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-500",
+      "prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:after:content-[''] prose-inline-code:before:content-['']"
     )}
   >
-    <header>
-      <h1>{entry.data.title}</h1>
-      <div class="flex gap-2 text-zinc-500 text-sm">
+    <header class="not-prose space-y-2">
+      <h1 class="text-xl font-medium text-zinc-900">{entry.data.title}</h1>
+      <div class="flex gap-2 text-sm text-zinc-500">
         <span>{dateFormatter.format(entry.data.pubDate)}</span>
         &bull;
         <span>{remarkPluginFrontmatter.minutesToRead}</span>

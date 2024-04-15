@@ -11,8 +11,8 @@ const blog = await getCollection("blog");
   <ul>
     {
       blog.map((entry) => (
-        <li class="py-2">
-          <a href={`/blog/${entry.slug}`}>
+        <li>
+          <a href={`/blog/${entry.slug}`} class="inline-block py-2 w-full">
             <span class="text-zinc-400">
               {dateFormatter.format(entry.data.pubDate)}
             </span>

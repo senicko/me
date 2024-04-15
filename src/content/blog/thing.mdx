@@ -5,49 +5,48 @@ pubDate: 2024-04-11
 
 import CodeSnippet from "../../components/CodeSnippet.astro";
 
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo urna molestie at elementum eu facilisis. A lacus vestibulum sed arcu. Egestas sed sed risus pretium quam vulputate dignissim. Tellus orci ac auctor augue mauris augue. Blandit libero volutpat sed cras. Augue mauris augue neque gravida in fermentum. Nunc sed velit dignissim sodales ut eu. Amet facilisis magna etiam tempor orci. Viverra vitae congue eu consequat.
-
-```
-
- ┌───────────┐    ┌───────────┐
- │           │    │           │
- │           │    │ ┌───────┐ │
- │           │    │ │       │ │
- │  Server   ├───►│ │       │ │
- │           │    │ └───────┘ │
- │           │    │           │
- │           │    │           │
- └───────────┘    └───────────┘
-
-```
+Lorem ipsum dolor **sit** amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo urna molestie at elementum eu facilisis. A lacus vestibulum sed arcu. Egestas sed sed risus pretium quam vulputate dignissim. `Tellus orci ac auctor augue mauris augue.` Blandit libero volutpat sed cras. Augue mauris augue neque gravida in fermentum. Nunc sed velit dignissim sodales ut eu. Amet facilisis magna etiam tempor orci. Viverra vitae congue eu consequat.
 
 Elementum tempus egestas sed sed risus. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Ipsum consequat nisl vel pretium lectus quam id. Sit amet facilisis magna etiam tempor orci eu. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi. Pellentesque sit amet porttitor eget dolor morbi non arcu.
 
-<CodeSnippet filename='main.go'>
+<CodeSnippet filename='main.go' description='Snippet 1: Application entry point.'>
 
-```go
-func (uc *studySessionUseCase) GetForStudySet(ctx context.Context, userID string, studySetID int64) (*domain.StudySession, error) {
-	studySessionRepo := uc.datastore.GetStudySessionRepo()
+```ts {5-10}
+const cache: Cache = sessionsStorage
+  ? (() => {
+      const storageKey = "tsr-scroll-restoration-v2";
 
-    studySession, err := studySessionRepo.GetForStudySet(ctx, userID, studySetID)
-    if err != nil {
-    	return nil, fmt.Errorf("%w: failed to get the study session: %w", ErrRepoFailed, err)
-    }
-    if studySession == nil {
-    	return nil, &ErrNotFound{
-    		Resource: StudySessionResource,
-    	}
-    }
+      const state: CacheState = JSON.parse(
+        window.sessionStorage.getItem(storageKey) || "null",
+      ) || { cached: {}, next: {} };
 
-    return studySession, nil
-}
+      return {
+        state,
+        set: (updater) => {
+          cache.state = functionalUpdate(updater, cache.state);
+          window.sessionStorage.setItem(
+            storageKey,
+            JSON.stringify(cache.state),
+          );
+        },
+      };
+    })()
+  : (undefined as any);
 ```
 
 </CodeSnippet>
 
 A cras semper auctor neque vitae tempus quam. Leo vel fringilla est ullamcorper eget nulla facilisi.
 
-<CodeSnippet>
+## Some Section
+
+Elementum tempus egestas sed sed risus. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Ipsum consequat nisl vel pretium lectus quam id. Sit amet facilisis magna etiam tempor orci eu. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi. Pellentesque sit amet porttitor eget dolor morbi non arcu.
+
+- One
+- Two and ...
+- Three, Four and Five
+
+<CodeSnippet description='Snippet 2: Example table definition.'>
 
 ```sql
 CREATE TABLE definition
@@ -57,9 +56,10 @@ CREATE TABLE definition
 	`phrase`       VARCHAR(256)       NOT NULL,
 	`meaning`      VARCHAR(256)       NOT NULL,
 	`sentences`    JSON               NOT NULL,
-
 	PRIMARY KEY (`id`)
 );
 ```
 
 </CodeSnippet>
+
+Pellentesque sit amet porttitor eget dolor morbi non arcu. Elementum tempus egestas sed sed risus. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi.
