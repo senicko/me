@@ -1,15 +1,40 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { dateFormatter } from "../lib/utils";
+import Footer from "../components/Footer.astro";
+
+const posts = await getCollection("posts");
 ---
 
-<Layout title="Home">
-  <h1 class="font-medium text-zinc-900">Sebastian Flajszer</h1>
-  <section class="space-y-2">
-    <h3 class="font-medium text-zinc-900">About</h3>
-    <p>
-      Hello, I am Sebastian, a 19 years old software engineer from Poland. I
-      like to
-      <i>code</i>.
-    </p>
-  </section>
-</Layout>
+<BaseLayout>
+  <main class="space-y-16">
+    <section class="space-y-2">
+      <h1 class="font-normal text-zinc-950">About</h1>
+      <p>
+        Hello, I am Sebastian, <br /> a 19 years old <i>software engineer</i> from
+        Poland.
+      </p>
+    </section>
+    <section class="space-y-2">
+      <h2 class="font-normal text-zinc-950">Posts</h2>
+      <ul>
+        {
+          posts.map((post) => (
+            <li class="border-t border-zinc-100 last:border-b">
+              <a href={`/posts/${post.slug}`} class="inline-block w-full py-2">
+                <span class="text-zinc-400">
+                  {dateFormatter.format(post.data.pubDate)}
+                </span>
+                &nbsp;
+                {post.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>

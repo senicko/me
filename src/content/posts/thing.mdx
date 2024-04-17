@@ -1,37 +1,51 @@
 ---
 title: This is a test blog post.
 pubDate: 2024-04-11
+description: This is a test blog post about nothing.
 ---
 
 import CodeSnippet from "../../components/CodeSnippet.astro";
+import Caption from "../../components/Caption.astro";
 
-Lorem ipsum dolor **sit** amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Leo urna molestie at elementum eu facilisis. A lacus vestibulum sed arcu. Egestas sed sed risus pretium quam vulputate dignissim. `Tellus orci ac auctor augue mauris augue.` Blandit libero volutpat sed cras. Augue mauris augue neque gravida in fermentum. Nunc sed velit dignissim sodales ut eu. Amet facilisis magna etiam tempor orci. Viverra vitae congue eu consequat.
+## Introduction
+
+**Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.** Leo urna molestie at elementum eu facilisis. A lacus vestibulum sed arcu. Egestas sed sed risus pretium quam vulputate dignissim. Tellus orci ac auctor augue mauris augue. Blandit libero volutpat sed cras. Augue mauris augue neque gravida in fermentum. Nunc sed velit dignissim sodales ut eu. Amet facilisis magna etiam tempor orci. Viverra vitae congue eu consequat.
+
+### How does SQL help us solve the problem?
 
 Elementum tempus egestas sed sed risus. Laoreet non curabitur gravida arcu ac tortor dignissim convallis aenean. Ipsum consequat nisl vel pretium lectus quam id. Sit amet facilisis magna etiam tempor orci eu. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi. Pellentesque sit amet porttitor eget dolor morbi non arcu.
 
-<CodeSnippet filename='main.go' description='Snippet 1: Application entry point.'>
+<CodeSnippet filename='main.rs'>
 
-```ts {5-10}
-const cache: Cache = sessionsStorage
-  ? (() => {
-      const storageKey = "tsr-scroll-restoration-v2";
+<Caption slot="description">
+  Snippet 1: Application entry point. Sed viverra tellus in hac habitasse
+  platea. Amet porttitor eget dolor morbi. Pellentesque sit amet porttitor eget
+  dolor morbi non arcu.
+</Caption>
 
-      const state: CacheState = JSON.parse(
-        window.sessionStorage.getItem(storageKey) || "null",
-      ) || { cached: {}, next: {} };
-
-      return {
-        state,
-        set: (updater) => {
-          cache.state = functionalUpdate(updater, cache.state);
-          window.sessionStorage.setItem(
-            storageKey,
-            JSON.stringify(cache.state),
-          );
-        },
-      };
-    })()
-  : (undefined as any);
+```rs
+fn parse_jsr_search_response(source: &str) -> Result<Vec<String>, AnyError> {
+  #[derive(Debug, Deserialize)]
+  #[serde(rename_all = "camelCase")]
+  struct Item {
+    scope: String,
+    name: String,
+    version_count: usize,
+  }
+  #[derive(Debug, Deserialize)]
+  #[serde(rename_all = "camelCase")]
+  struct Response {
+    items: Vec<Item>,
+  }
+  let items = serde_json::from_str::<Response>(source)?.items;
+  Ok(
+    items
+      .into_iter()
+      .filter(|i| i.version_count > 0)
+      .map(|i| format!("@{}/{}", i.scope, i.name))
+      .collect(),
+  )
+}
 ```
 
 </CodeSnippet>

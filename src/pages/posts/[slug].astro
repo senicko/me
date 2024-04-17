@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TableOfContents from "../../components/TableOfContents.astro";
+import { generateToc } from "../../lib/toc";
+import { cn, dateFormatter } from "../../lib/utils";
+
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+
+export const getStaticPaths = (async () => {
+  const blog = await getCollection("posts");
+
+  return blog.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content, remarkPluginFrontmatter, headings } = await entry.render();
+
+const toc = generateToc(headings, 3);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description}>
+  <article
+    class={cn(
+      "prose prose-zinc pb-32",
+      "prose-h2:text-xl",
+      "prose-p:text-zinc-600",
+      "prose-headings:font-normal prose-headings:text-base prose-headings:mt-16 prose-headings:mb-4 prose-headings:text-zinc-950",
+      "prose-strong:text-zinc-800 prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-800 prose-strong:font-medium",
+      "prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:after:content-[''] prose-inline-code:before:content-['']"
+    )}
+  >
+    <div class="not-prose mb-16 space-y-16">
+      <header class="space-y-2">
+        <h1 class="text-xl font-normal text-zinc-900">
+          {entry.data.title}
+        </h1>
+        <div class="flex gap-2 text-sm text-zinc-500">
+          <span>{dateFormatter.format(entry.data.pubDate)}</span>
+          &bull;
+          <span>{remarkPluginFrontmatter.minutesToRead}</span>
+        </div>
+      </header>
+      <nav class="space-y-2" aria-label="Table of contents">
+        <TableOfContents {toc} />
+      </nav>
+    </div>
+    <Content />
+  </article>
+</BaseLayout>

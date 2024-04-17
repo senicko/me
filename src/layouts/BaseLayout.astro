@@ -1,0 +1,61 @@
+---
+import Nav from "../components/Nav.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+
+const compoundPageTitle = (title ? `${title} - ` : "") + "Sebastian Flajszer";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Regular meta tags -->
+    <title>{compoundPageTitle}</title>
+    {description && <meta name="description" content={description} />}
+
+    <!-- OpenGraph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={compoundPageTitle} />
+    {description && <meta property="og:description" content={description} />}
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:title" content={compoundPageTitle} />
+    {
+      description && (
+        <meta property="twitter:description" content={description} />
+      )
+    }
+  </head>
+  <body>
+    <div class="min-w-prose mx-auto max-w-prose space-y-16 px-4 py-16">
+      <Nav />
+      <slot />
+    </div>
+  </body>
+
+  <style is:global>
+    * {
+      @apply text-zinc-600;
+    }
+
+    @font-face {
+      font-family: "Geist";
+      src: url("/fonts/GeistVF.woff2") format("woff2-variations");
+    }
+
+    @font-face {
+      font-family: "Geist Mono";
+      src: url("/fonts/GeistMonoVF.woff2") format("woff2-variations");
+    }
+  </style>
+</html>
