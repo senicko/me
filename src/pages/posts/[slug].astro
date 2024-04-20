@@ -25,20 +25,19 @@ const toc = generateToc(headings, 3);
 <BaseLayout title={entry.data.title} description={entry.data.description}>
   <article
     class={cn(
-      "prose prose-zinc pb-32",
+      "prose dark:prose-invert prose-theme pb-32",
       "prose-h2:text-xl",
-      "prose-p:text-zinc-600",
-      "prose-headings:font-normal prose-headings:text-base prose-headings:mt-16 prose-headings:mb-4 prose-headings:text-zinc-950",
-      "prose-strong:text-zinc-800 prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-800 prose-strong:font-medium",
-      "prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:after:content-[''] prose-inline-code:before:content-['']"
+      "prose-headings:font-normal prose-headings:text-base prose-headings:mt-16 prose-headings:mb-4",
+      "prose-strong:border-b prose-strong:border-dashed dark:prose-strong:border-b-zinc-200 prose-strong:border-zinc-800 prose-strong:font-medium",
+      "prose-inline-code:bg-zinc-50 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:border-zinc-600 prose-inline-code:px-2 prose-inline-code:py-1 prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:after:content-[''] prose-inline-code:before:content-['']"
     )}
   >
     <div class="not-prose mb-16 space-y-16">
       <header class="space-y-2">
-        <h1 class="text-xl font-normal text-zinc-900">
+        <h1 class="text-xl font-normal text-zinc-900 dark:text-zinc-100">
           {entry.data.title}
         </h1>
-        <div class="flex gap-2 text-sm text-zinc-500">
+        <div class="flex gap-2 text-sm text-zinc-500 dark:text-zinc-400">
           <span>{dateFormatter.format(entry.data.pubDate)}</span>
           &bull;
           <span>{remarkPluginFrontmatter.minutesToRead}</span>

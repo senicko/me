@@ -2,13 +2,14 @@
   <a
     id="portal"
     href="/"
-    class="inline-block py-2 font-['Geist_Mono'] text-zinc-950">[\]</a
+    class="inline-block py-2 font-['Geist_Mono'] text-zinc-950 dark:text-zinc-100"
+    >[|]</a
   >
 </nav>
 
 <script>
   const portal = document.querySelector<HTMLLinkElement>("#portal")!;
-  const symbols = ["\\", "|", "/", "-"];
+  const symbols = ["\\", "|", "/", "|"];
 
   let current = 0;
   setInterval(() => {

@@ -10,7 +10,7 @@ const { filename } = Astro.props;
 <figure class="not-prose my-8 space-y-2">
   <div class="group relative">
     <button
-      class="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50/80 text-zinc-800 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100"
+      class="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-md border border-zinc-200 bg-zinc-50/80 text-zinc-800 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100 dark:border-zinc-700 dark:bg-zinc-900/80 dark:text-zinc-400"
       id="copyButton"
     >
       <svg
@@ -38,7 +38,7 @@ const { filename } = Astro.props;
     <slot />
     {
       filename && (
-        <div class="rounded-b-lg border border-zinc-200 bg-zinc-50 p-2 text-xs">
+        <div class="rounded-b-lg border border-zinc-200 bg-zinc-50 p-2 text-xs dark:border-zinc-700 dark:bg-zinc-900">
           <span>{filename}</span>
         </div>
       )
@@ -76,7 +76,7 @@ const { filename } = Astro.props;
 
 <style is:global>
   .astro-code {
-    @apply rounded-lg border border-zinc-200 py-4 text-sm;
+    @apply rounded-lg border border-zinc-200 py-4 text-sm dark:border-zinc-700;
 
     &:has(+ div) {
       @apply rounded-b-none border-b-0;

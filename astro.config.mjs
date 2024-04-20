@@ -9,7 +9,9 @@ import {
   transformerNotationHighlight,
 } from "@shikijs/transformers";
 import { remarkReadingTime } from "./remark-reading-time.mjs";
-import theme from "./theme.json";
+
+import lightTheme from "./themes/light-theme.json";
+import darkTheme from "./themes/dark-theme.json";
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,7 +20,10 @@ export default defineConfig({
   markdown: {
     remarkPlugins: [remarkReadingTime],
     shikiConfig: {
-      theme: theme,
+      themes: {
+        light: lightTheme,
+        dark: darkTheme,
+      },
       transformers: [
         transformerNotationHighlight(),
         transformerMetaHighlight(),
