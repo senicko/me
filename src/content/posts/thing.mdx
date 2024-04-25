@@ -23,30 +23,59 @@ import Caption from "../../components/Caption.astro";
   dolor morbi non arcu.
 </Caption>
 
-```rs
-fn parse_jsr_search_response(source: &str) -> Result<Vec<String>, AnyError> {
-  #[derive(Debug, Deserialize)]
-  #[serde(rename_all = "camelCase")]
-  struct Item {
-    scope: String,
-    name: String,
-    version_count: usize,
+```ts
+import type { MarkdownHeading } from "astro";
+
+/** Toc represents a toc of a document. */
+export type Toc = Array<TocEntry>;
+
+/** TocEntry represents a single entry in a toc. */
+export type TocEntry = MarkdownHeading & {
+  children: Array<TocEntry>;
+};
+
+/**
+ * generateToc converts a linear toc structure into a tree structure
+ * that can be used for semantic html rendering.
+ */
+export function generateToc(
+  rawHeadings: Array<MarkdownHeading>,
+  depth: number,
+): Array<TocEntry> {
+  if (rawHeadings.length === 0 || depth < 1) {
+    return [];
   }
 
-  #[derive(Debug, Deserialize)]
-  #[serde(rename_all = "camelCase")]
-  struct Response {
-    items: Vec<Item>,
+  const headings = rawHeadings.map((heading) => ({
+    ...heading,
+    children: [],
+  }));
+
+  const toc: Array<TocEntry> = [headings.shift()!];
+
+  for (const heading of headings) {
+    if (heading.depth > depth) {
+      continue;
+    }
+
+    while (toc.length !== 0 && heading.depth < toc.at(-1)!.depth) {
+      let top = toc.pop()!;
+      const targetDepth = top.depth - 1;
+      const children = [];
+
+      while (top.depth > targetDepth) {
+        children.unshift(top);
+        top = toc.pop()!;
+      }
+
+      top.children = children;
+      toc.push(top);
+    }
+
+    toc.push(heading);
   }
 
-  let items = serde_json::from_str::<Response>(source)?.items;
-  Ok(
-    items
-      .into_iter()
-      .filter(|i| i.version_count > 0)
-      .map(|i| format!("@{}/{}", i.scope, i.name))
-      .collect(),
-  )
+  return toc;
 }
 ```
 
@@ -62,7 +91,7 @@ Elementum tempus egestas sed sed risus. Laoreet non curabitur gravida arcu ac to
 - Two and ...
 - Three, Four and Five
 
-<CodeSnippet description='Snippet 2: Example table definition.'>
+<CodeSnippet>
 
 ```sql
 CREATE TABLE definition
@@ -79,3 +108,21 @@ CREATE TABLE definition
 </CodeSnippet>
 
 Pellentesque sit amet porttitor eget dolor morbi non arcu. Elementum tempus egestas sed sed risus. Dolor sit amet consectetur adipiscing elit ut. Aliquet lectus proin nibh nisl condimentum. Sed viverra tellus in hac habitasse platea. Amet porttitor eget dolor morbi.
+
+<CodeSnippet>
+
+```rb
+module EmojiHelper
+  def emojify(content)
+    h(content).to_str.gsub(/:([\w+-]+):/) do |match|
+      if emoji = Emoji.find_by_alias($1)
+        %(<img alt="#$1" src="#{image_path("emoji/#{emoji.image_filename}")}" style="vertical-align:middle" width="20" height="20" />)
+      else
+        match
+      end
+    end.html_safe if content.present?
+  end
+end
+```
+
+</CodeSnippet>

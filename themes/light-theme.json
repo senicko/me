@@ -1,17 +1,24 @@
 {
   "tokenColors": [
-    { "settings": { "background": "#fff", "foreground": "#a1a1aa" } },
-    {
-      "scope": ["string"],
-      "settings": { "foreground": "#0ea5e9" }
-    },
-    { "scope": ["storage", "entity"], "settings": { "foreground": "#09090b" } },
+    { "settings": { "background": "#fff", "foreground": "#71717a" } },
     {
       "scope": ["comment"],
-      "settings": { "foreground": "#d4d4d8" }
+      "settings": { "foreground": "#a1a1aa" }
     },
     {
-      "scope": ["keyword", "variable"],
+      "scope": ["string"],
+      "settings": { "foreground": "#52525b" }
+    },
+    {
+      "scope": ["storage.type", "keyword.control"],
+      "settings": { "foreground": "#09090b" }
+    },
+    {
+      "scope": [
+        "variable.parameter",
+        "entity.name.type",
+        "support.type.primitive"
+      ],
       "settings": { "foreground": "#3f3f46" }
     }
   ]
