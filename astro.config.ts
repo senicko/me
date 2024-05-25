@@ -15,6 +15,7 @@ import darkTheme from "./themes/dark-theme.json";
 import lightTheme from "./themes/light-theme.json";
 
 const rehypeAutoLinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
+  behavior: "append",
   content: [
     s(
       "svg",

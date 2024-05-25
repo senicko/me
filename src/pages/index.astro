@@ -1,9 +1,8 @@
 ---
 import { getCollection } from "astro:content";
-
+import Footer from "../components/Footer.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { dateFormatter } from "../lib/utils";
-import Footer from "../components/Footer.astro";
 
 const posts = await getCollection("posts");
 ---
