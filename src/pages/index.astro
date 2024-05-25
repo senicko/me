@@ -16,24 +16,29 @@ const posts = await getCollection("posts");
         Poland.
       </p>
     </section>
-    <section class="space-y-2">
-      <h2 class="font-normal text-zinc-950 dark:text-zinc-50">Posts</h2>
-      <ul>
-        {
-          posts.map((post) => (
-            <li class="border-t border-zinc-100 last:border-b dark:border-zinc-800">
-              <a href={`/posts/${post.slug}`} class="inline-block w-full py-2">
-                <span class="text-zinc-400 dark:text-zinc-600">
-                  {dateFormatter.format(post.data.pubDate)}
-                </span>
-                &nbsp;
-                {post.data.title}
-              </a>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+    {
+      posts.length !== 0 && (
+        <section class="space-y-2">
+          <h2 class="font-normal text-zinc-950 dark:text-zinc-50">Posts</h2>
+          <ul>
+            {posts.map((post) => (
+              <li class="border-t border-zinc-100 last:border-b dark:border-zinc-800">
+                <a
+                  href={`/posts/${post.slug}`}
+                  class="inline-block w-full py-2"
+                >
+                  <span class="text-zinc-400 dark:text-zinc-600">
+                    {dateFormatter.format(post.data.pubDate)}
+                  </span>
+                  &nbsp;
+                  {post.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
   </main>
   <Footer />
 </BaseLayout>
