@@ -6,16 +6,45 @@ import type { HTMLAttributes } from "astro/types";
 interface Props extends HTMLAttributes<"footer"> {}
 
 const { class: htmlClass, ...attrs } = Astro.props;
+
+const links = [
+  {
+    label: "GitHub",
+    href: "https://github.com/senicko",
+  },
+  {
+    label: "RSS",
+    href: "/rss.xml",
+  },
+];
 ---
 
 <footer class={cn("space-y-2", htmlClass)} {...attrs}>
   <h2 class="font-normal text-zinc-950 dark:text-zinc-50">Social</h2>
   <ul class="space-y-2">
-    <li>
-      <a href="https://github.com/senicko">GitHub</a>
-    </li>
-    <li>
+    {
+      links.map((link) => (
+        <li class="flex items-center gap-1">
+          <a href={link.href} class="underline">
+            {link.label}
+          </a>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            class="inline-block size-4"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        </li>
+      ))
+    }
+    <!-- <li>
       <a href="/rss.xml">RSS</a>
-    </li>
+    </li> -->
   </ul>
 </footer>
