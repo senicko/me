@@ -1,5 +1,34 @@
 ---
-title: this is test
-pubDate: 1984-01-12
+title: This is a test blog post
+pubDate: 2024-05-26
 description: test
 ---
+
+import CodeSnippet from "../../components/CodeSnippet.astro";
+
+<CodeSnippet filename='test.ts'>
+
+```ts
+test("Vertices are added correctly", () => {
+  // arrange
+  const source = `
+vertex(A)
+vertex(B, 23)
+`;
+
+  const tokens = new Lexer(source).lex();
+  const stmts = new Parser(tokens).parse();
+  const interpreter = new Interpreter(stmts);
+
+  // act
+  const got = interpreter.forge();
+
+  // assert
+  expect(Object.values(got.vertices)).toEqual([
+    new Vertex("A", 1),
+    new Vertex("B", 23),
+  ]);
+});
+```
+
+</CodeSnippet>

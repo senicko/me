@@ -11,8 +11,8 @@ import rehypeAutolinkHeadings, {
 } from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
 import { remarkReadingTime } from "./remark-reading-time.js";
-import darkTheme from "./themes/dark-theme.json";
 import lightTheme from "./themes/light-theme.json";
+import darkTheme from "./themes/dark-theme.json";
 
 const rehypeAutoLinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
   behavior: "append",
