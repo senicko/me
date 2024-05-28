@@ -1,0 +1,4 @@
+User-Agent: *
+Disallow: /_astro/
+Disallow: /fonts/
+Disallow: /404.html
