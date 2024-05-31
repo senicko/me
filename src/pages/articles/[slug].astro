@@ -3,17 +3,22 @@ import type { GetStaticPaths } from "astro";
 import { getCollection } from "astro:content";
 import TableOfContents from "../../components/TableOfContents.astro";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import AudioPlayer from "../../components/AudioPlayer";
 import Footer from "../../components/Footer.astro";
 import { generateToc } from "../../lib/toc";
 import { cn, dateFormatter } from "../../lib/utils";
 
 export const getStaticPaths = (async () => {
-  const blog = await getCollection("posts");
+  const blog = await getCollection("articles");
 
-  return blog.map((entry) => ({
-    params: { slug: entry.slug },
-    props: { entry },
-  }));
+  return blog.map((entry) => {
+    entry.render().then((output) => console.log(output.Content));
+
+    return {
+      params: { slug: entry.slug },
+      props: { entry },
+    };
+  });
 }) satisfies GetStaticPaths;
 
 const { entry } = Astro.props;
@@ -24,13 +29,13 @@ const toc = generateToc(headings, 3);
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
   <article
-    class={cn(
-      "prose dark:prose-invert prose-theme max-w-none",
+    class:list={[
+      "prose prose-theme max-w-none dark:prose-invert",
       "prose-h2:text-xl",
-      "prose-headings:font-normal prose-headings:text-base prose-headings:mt-10 prose-headings:pt-6 prose-headings:mb-4",
-      "prose-strong:border-b prose-strong:border-dashed dark:prose-strong:border-b-zinc-200 prose-strong:border-zinc-800 prose-strong:font-medium",
-      "prose-inline-code:bg-zinc-50 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:border-zinc-600 prose-inline-code:px-2 prose-inline-code:py-1 prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:after:content-[''] prose-inline-code:before:content-['']",
-    )}
+      "prose-headings:mb-2 prose-headings:mt-12 prose-headings:pt-4 prose-headings:text-base prose-headings:font-normal",
+      "prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-800 prose-strong:font-medium dark:prose-strong:border-b-zinc-200",
+      "prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:font-medium prose-inline-code:text-zinc-800 prose-inline-code:before:content-[''] prose-inline-code:after:content-[''] dark:prose-inline-code:border-zinc-600 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:text-zinc-200",
+    ]}
   >
     <div class="not-prose mb-12 space-y-16">
       <div class="flex items-center gap-6">
@@ -70,6 +75,16 @@ const toc = generateToc(headings, 3);
           </div>
         </header>
       </div>
+      {
+        entry.data.podcast && (
+          <div>
+            <AudioPlayer
+              src={`/assets/podcasts/${entry.slug}.mp3`}
+              client:only="react"
+            />
+          </div>
+        )
+      }
       <nav class="space-y-2" aria-label="Table of contents">
         <TableOfContents {toc} />
       </nav>

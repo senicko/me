@@ -6,9 +6,10 @@ const postsCollection = defineCollection({
     title: z.string(),
     pubDate: z.date(),
     description: z.string(),
+    podcast: z.boolean().optional(),
   }),
 });
 
 export const collections = {
-  posts: postsCollection,
+  articles: postsCollection,
 };

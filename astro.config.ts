@@ -4,16 +4,18 @@ import {
   transformerMetaHighlight,
   transformerNotationHighlight,
 } from "@shikijs/transformers";
+import type { RemarkPlugins } from "astro";
 import { defineConfig } from "astro/config";
 import { s } from "hastscript";
+import { toString } from "mdast-util-to-string";
+import getReadingTime from "reading-time";
 import rehypeAutolinkHeadings, {
   type Options as RehypeAutolinkHeadingsOptions,
 } from "rehype-autolink-headings";
 import rehypeSlug from "rehype-slug";
-import { remarkReadingTime } from "./remark-reading-time.js";
-import lightTheme from "./themes/light-theme.json";
 import darkTheme from "./themes/dark-theme.json";
-
+import lightTheme from "./themes/light-theme.json";
+import react from "@astrojs/react";
 const rehypeAutoLinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
   behavior: "append",
   content: [
@@ -38,6 +40,17 @@ const rehypeAutoLinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
   ],
 };
 
+/**
+ * remarkReadingTime returns remark plugin that generates expected reading time for each blog post.
+ */
+export function remarkReadingTime() {
+  return function (tree, { data }) {
+    const textOnPage = toString(tree);
+    const readingTime = getReadingTime(textOnPage);
+    data.astro.frontmatter.minutesToRead = readingTime.text;
+  } satisfies RemarkPlugins[0];
+}
+
 // https://astro.build/config
 export default defineConfig({
   integrations: [
@@ -59,6 +72,8 @@ export default defineConfig({
       },
     }),
     tailwind(),
+    react(),
   ],
   site: "https://senicko.me",
+  devToolbar: { enabled: false },
 });
