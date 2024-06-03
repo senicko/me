@@ -14,7 +14,10 @@ const { toc, depth = 0 } = Astro.props;
     toc.map((header) => (
       <>
         <li>
-          <a href={`#${header.slug}`} class="transition hover:text-zinc-900">
+          <a
+            href={`#${header.slug}`}
+            class="transition hover:text-zinc-900 dark:hover:text-zinc-50"
+          >
             {header.text}
           </a>
           {header.children.length !== 0 && (

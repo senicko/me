@@ -83,6 +83,7 @@ export default function AudioPlayer({ src }: { src: string }) {
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
           onProgress={(e) =>
+            e.currentTarget.buffered.length > 0 &&
             setBufferedAmount(
               e.currentTarget.buffered.end(e.currentTarget.buffered.length - 1),
             )
