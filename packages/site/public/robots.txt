@@ -2,3 +2,5 @@ User-Agent: *
 Disallow: /_astro/
 Disallow: /assets/
 Disallow: /404.html
+
+Sitemap: https://senicko.com/sitemap-index.xml

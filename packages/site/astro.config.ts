@@ -16,6 +16,8 @@ import rehypeSlug from "rehype-slug";
 import darkTheme from "./themes/dark-theme.json";
 import lightTheme from "./themes/light-theme.json";
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
+
 const rehypeAutoLinkHeadingsOptions: RehypeAutolinkHeadingsOptions = {
   behavior: "append",
   content: [
@@ -73,7 +75,10 @@ export default defineConfig({
     }),
     tailwind(),
     react(),
+    sitemap(),
   ],
-  site: "https://senicko.me",
-  devToolbar: { enabled: false },
+  site: "https://senicko.com",
+  devToolbar: {
+    enabled: false,
+  },
 });

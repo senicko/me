@@ -18,13 +18,15 @@ const compoundPageTitle = (title ? `${title} - ` : "") + "Sebastian Flajszer";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <meta name="author" content="Sebastian Flajszer" />
-    <meta name="copyright" content="Sebastian Flajszer" />
-    {tags && <meta name="keywords" content={tags.join(", ")} />}
+
+    <link rel="sitemap" href="/sitemap-index.xml" />
 
     <!-- Regular meta tags -->
     <title>{compoundPageTitle}</title>
     {description && <meta name="description" content={description} />}
+    {tags && <meta name="keywords" content={tags.join(", ")} />}
+    <meta name="author" content="Sebastian Flajszer" />
+    <meta name="copyright" content="Sebastian Flajszer" />
 
     <!-- OpenGraph / Facebook -->
     <meta property="og:type" content="website" />

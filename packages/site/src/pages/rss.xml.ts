@@ -3,16 +3,17 @@ import { getCollection } from "astro:content";
 import type { APIRoute } from "astro";
 
 export const GET: APIRoute = async (context) => {
-  const blog = await getCollection("posts");
+  const articles = await getCollection("articles");
 
   return rss({
     title: "Senicko",
     description: "My thoughts on different computer science related topics.",
     site: context.site!,
-    items: blog.map((post) => ({
-      title: post.data.title,
-      pubDate: post.data.pubDate,
-      link: `/blog/${post.slug}`,
+    items: articles.map((article) => ({
+      title: article.data.title,
+      pubDate: article.data.pubDate,
+      link: `/writing/${article.slug}`,
+      categories: article.data.tags,
     })),
     customData: "<language>en-us</language>",
   });
