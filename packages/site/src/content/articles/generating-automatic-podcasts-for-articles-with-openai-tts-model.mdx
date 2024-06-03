@@ -20,7 +20,7 @@ Who doesn't like podcasts? Well, certainly not me! That's why in today's article
 
 - I write my articles in MDX, so I can't just pass them to the TTS API. They need to be transformed into “tts-compatible” input, which doesn't have frontmatter, JSX elements like code snippets, JavaScript imports, etc.
 
-- OpenAI's TTS API input accepts strings at most 4096 characters long, so in case of longer articles, we need to break them into sections, generate an audio file for each, and join them together to get the final podcast.
+- OpenAI's TTS API input accepts strings at most 4096 characters long, so in case of longer articles, we need to break them into **sections**, generate an audio file for each, and join them together to get the final podcast.
 
 - The process of generating podcasts should be quick and simple. We want a CLI tool that lists modified or new articles and lets us pick the ones for which we want to generate a podcast.
 
@@ -28,7 +28,7 @@ Note: while this post contains code snippets it's not a tutorial. If you want to
 
 ## Transforming raw MDX files into TTS input
 
-Node.js has a really good toolkit for working with a content called unified, which "compiles content to syntax trees and syntax trees to content". We ll use it to parse our MDX articles and process their ASTs. We can get started by defining the necessary types and a compileArticle function.
+Node.js has a really good toolkit for working with a content called unified, which _"compiles content to syntax trees and syntax trees to content"_. We ll use it to parse our MDX articles and process their ASTs. We can get started by defining the necessary types and a `compileArticle` function.
 
 <CodeSnippet>
 

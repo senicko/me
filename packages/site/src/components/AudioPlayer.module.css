@@ -1,9 +1,13 @@
 .slider {
-  position: relative;
-  @apply h-1 appearance-none rounded-sm bg-zinc-600 before:absolute
-  before:h-1 before:rounded-l-lg before:bg-zinc-100 before:content-[''] dark:bg-zinc-400 dark:before:bg-zinc-900;
+  @apply relative h-1 cursor-pointer appearance-none rounded-sm bg-zinc-600
+  before:pointer-events-none before:absolute before:h-1 before:rounded-lg before:bg-zinc-500 before:content-[''] after:pointer-events-none after:absolute
+  after:h-1 after:rounded-lg after:bg-white after:content-[''] dark:bg-zinc-400/60  dark:before:bg-zinc-500/50 dark:after:bg-zinc-950;
 
   &::before {
+    width: var(--buffered-width);
+  }
+
+  &::after {
     width: var(--seek-before-width);
   }
 }

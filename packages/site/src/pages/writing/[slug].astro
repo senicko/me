@@ -7,6 +7,7 @@ import AudioPlayer from "../../components/AudioPlayer";
 import Footer from "../../components/Footer.astro";
 import { generateToc } from "../../lib/toc";
 import { dateFormatter } from "../../lib/utils";
+import { cn } from "../../lib/utils";
 
 export const getStaticPaths = (async () => {
   const blog = await getCollection("articles");
@@ -33,13 +34,13 @@ const toc = generateToc(headings, 3);
   tags={entry.data.tags}
 >
   <article
-    class:list={[
+    class={cn([
       "prose prose-theme max-w-none dark:prose-invert",
       "prose-headings:mb-2 prose-headings:mt-6 prose-headings:pt-4 prose-h2:mt-12 prose-h2:text-xl",
       "prose-headings:text-base prose-headings:font-normal",
       "prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-800 prose-strong:font-normal dark:prose-strong:border-b-zinc-200",
-      "prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:font-medium prose-inline-code:text-zinc-800 prose-inline-code:before:content-[''] prose-inline-code:after:content-[''] dark:prose-inline-code:border-zinc-600 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:text-zinc-200",
-    ]}
+      "prose-inline-code:inline-block prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:bg-zinc-50 prose-inline-code:px-1 prose-inline-code:font-medium prose-inline-code:text-zinc-800 prose-inline-code:before:content-[''] prose-inline-code:after:content-[''] dark:prose-inline-code:border-zinc-600 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:text-zinc-200",
+    ])}
   >
     <div class="not-prose mb-12 space-y-16">
       <a

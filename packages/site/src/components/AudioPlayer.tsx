@@ -19,10 +19,13 @@ export default function AudioPlayer({ src }: { src: string }) {
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [playing, togglePlaying] = useReducer((state) => !state, false);
+  const [muted, toggleMuted] = useReducer((state) => !state, false);
+
   const [progress, setProgress] = useState(0);
+  const [bufferedAmount, setBufferedAmount] = useState(0);
+
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(40);
-  const [muted, toggleMuted] = useReducer((state) => !state, false);
 
   const handlePlayPause = () => {
     if (!audioRef.current) {
@@ -70,15 +73,20 @@ export default function AudioPlayer({ src }: { src: string }) {
 
   return (
     <div className="relative">
-      <span className="absolute -right-6 -top-4 ml-4 block w-fit rotate-12 rounded-md bg-violet-300 p-1 text-xs text-zinc-900">
+      <span className="absolute -right-6 -top-4 ml-4 block w-fit rotate-12 rounded-md bg-violet-300 p-1 text-xs text-zinc-950">
         AI generated
       </span>
-      <div className="flex items-center gap-6 rounded-md bg-zinc-900 p-4 text-sm text-zinc-100 dark:border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900">
+      <div className="flex items-center gap-6 rounded-md bg-zinc-900 p-4 text-sm text-white dark:border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900">
         <audio
           ref={audioRef}
           src={src}
           onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
           onTimeUpdate={(e) => setProgress(e.currentTarget.currentTime)}
+          onProgress={(e) =>
+            setBufferedAmount(
+              e.currentTarget.buffered.end(e.currentTarget.buffered.length - 1),
+            )
+          }
           muted={muted}
           preload="metadata"
         />
@@ -113,6 +121,8 @@ export default function AudioPlayer({ src }: { src: string }) {
           style={{
             ["--seek-before-width" as string]:
               (progress / duration) * 100 + "%",
+            ["--buffered-width" as string]:
+              (bufferedAmount / duration) * 100 + "%",
           }}
           type="range"
           step="0.001"
