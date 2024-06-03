@@ -1,4 +1,0 @@
-User-Agent: *
-Disallow: /_astro/
-Disallow: /assets/
-Disallow: /404.html

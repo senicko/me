@@ -1,0 +1,27 @@
+---
+import type { Toc } from "../lib/toc";
+
+interface Props {
+  toc: Toc;
+  depth?: number;
+}
+
+const { toc, depth = 0 } = Astro.props;
+---
+
+<ol style={{ paddingLeft: `calc(16px * ${depth})` }}>
+  {
+    toc.map((header) => (
+      <>
+        <li>
+          <a href={`#${header.slug}`} class="transition hover:text-zinc-900">
+            {header.text}
+          </a>
+          {header.children.length !== 0 && (
+            <Astro.self toc={header.children} depth={depth + 1} />
+          )}
+        </li>
+      </>
+    ))
+  }
+</ol>

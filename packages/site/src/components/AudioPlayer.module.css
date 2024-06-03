@@ -1,0 +1,24 @@
+.slider {
+  position: relative;
+  @apply h-1 appearance-none rounded-sm bg-zinc-600 before:absolute
+  before:h-1 before:rounded-l-lg before:bg-zinc-100 before:content-[''] dark:bg-zinc-400 dark:before:bg-zinc-900;
+
+  &::before {
+    width: var(--seek-before-width);
+  }
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  @apply h-4 w-2 cursor-pointer rounded-sm border-none bg-transparent;
+}
+
+/* All the same stuff for Firefox */
+.slider::-moz-range-thumb {
+  @apply h-4 w-2 cursor-pointer rounded-sm border-none bg-transparent;
+}
+
+/* All the same stuff for IE */
+.slider::-ms-thumb {
+  @apply h-4 w-2 cursor-pointer rounded-sm border-none bg-transparent;
+}

@@ -1,1 +1,1 @@
-pnpm format 
+pnpm pre-commit 

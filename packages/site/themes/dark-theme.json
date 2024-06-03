@@ -1,0 +1,25 @@
+{
+  "tokenColors": [
+    { "settings": { "background": "#18181b", "foreground": "#a1a1aa" } },
+    {
+      "scope": ["comment"],
+      "settings": { "foreground": "#52525b" }
+    },
+    {
+      "scope": ["string"],
+      "settings": { "foreground": "#d4d4d8" }
+    },
+    {
+      "scope": ["storage.type", "keyword.control"],
+      "settings": { "foreground": "#f4f4f5" }
+    },
+    {
+      "scope": [
+        "variable.parameter",
+        "entity.name.type",
+        "support.type.primitive"
+      ],
+      "settings": { "foreground": "#d4d4d8" }
+    }
+  ]
+}

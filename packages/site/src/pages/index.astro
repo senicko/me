@@ -1,0 +1,57 @@
+---
+import { getCollection } from "astro:content";
+import Footer from "../components/Footer.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { dateFormatter } from "../lib/utils";
+
+const articles = await getCollection("articles");
+
+const description = `I am Sebastian, 19 years old software engineer interested in full stack web development from Poland.`;
+---
+
+<BaseLayout description={description}>
+  <main class="space-y-16">
+    <section class="space-y-2">
+      <h1 class="font-normal text-zinc-950 dark:text-zinc-50">About</h1>
+      <p>
+        Hello, I am Sebastian, 19 years old <i>software engineer</i> interested in
+        full stack web development from Poland.
+      </p>
+    </section>
+    {
+      articles.length !== 0 && (
+        <section class="space-y-2">
+          <h2 class="font-normal text-zinc-950 dark:text-zinc-50">Writing</h2>
+          <ul>
+            {articles.map((post) => (
+              <li class="flex dark:border-zinc-800">
+                <span class="min-w-fit text-zinc-400 dark:text-zinc-600">
+                  {dateFormatter.format(post.data.pubDate)}
+                </span>
+                <a
+                  href={`/writing/${post.slug}`}
+                  class="inline-block w-full max-w-[400px] pl-4 text-zinc-950 hover:underline dark:text-zinc-50"
+                >
+                  {post.data.title}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    class="inline-block size-4"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M4.22 11.78a.75.75 0 0 1 0-1.06L9.44 5.5H5.75a.75.75 0 0 1 0-1.5h5.5a.75.75 0 0 1 .75.75v5.5a.75.75 0 0 1-1.5 0V6.56l-5.22 5.22a.75.75 0 0 1-1.06 0Z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </main>
+  <Footer />
+</BaseLayout>

@@ -1,0 +1,90 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection } from "astro:content";
+import TableOfContents from "../../components/TableOfContents.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AudioPlayer from "../../components/AudioPlayer";
+import Footer from "../../components/Footer.astro";
+import { generateToc } from "../../lib/toc";
+import { dateFormatter } from "../../lib/utils";
+
+export const getStaticPaths = (async () => {
+  const blog = await getCollection("articles");
+
+  return blog.map((entry) => {
+    entry.render().then((output) => console.log(output.Content));
+
+    return {
+      params: { slug: entry.slug },
+      props: { entry },
+    };
+  });
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content, remarkPluginFrontmatter, headings } = await entry.render();
+
+const toc = generateToc(headings, 3);
+---
+
+<BaseLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  tags={entry.data.tags}
+>
+  <article
+    class:list={[
+      "prose prose-theme max-w-none dark:prose-invert",
+      "prose-headings:mb-2 prose-headings:mt-6 prose-headings:pt-4 prose-h2:mt-12 prose-h2:text-xl",
+      "prose-headings:text-base prose-headings:font-normal",
+      "prose-strong:border-b prose-strong:border-dashed prose-strong:border-zinc-800 prose-strong:font-normal dark:prose-strong:border-b-zinc-200",
+      "prose-inline-code:rounded-lg prose-inline-code:border prose-inline-code:bg-zinc-50 prose-inline-code:p-1 prose-inline-code:font-medium prose-inline-code:text-zinc-800 prose-inline-code:before:content-[''] prose-inline-code:after:content-[''] dark:prose-inline-code:border-zinc-600 dark:prose-inline-code:bg-zinc-800 dark:prose-inline-code:text-zinc-200",
+    ]}
+  >
+    <div class="not-prose mb-12 space-y-16">
+      <a
+        href="/"
+        class="flex items-center gap-2 text-zinc-900 hover:underline dark:text-zinc-100"
+        aria-label="Go back to the home page"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 16 16"
+          fill="currentColor"
+          class="size-4"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M11.78 11.78a.75.75 0 0 0 0-1.06L6.56 5.5h3.69a.75.75 0 0 0 0-1.5h-5.5a.75.75 0 0 0-.75.75v5.5a.75.75 0 0 0 1.5 0V6.56l5.22 5.22a.75.75 0 0 0 1.06 0Z"
+            clip-rule="evenodd"></path>
+        </svg>
+        Writing
+      </a>
+      <header class="space-y-4">
+        <h1 class="text-2xl font-normal text-zinc-900 dark:text-zinc-100">
+          {entry.data.title}
+        </h1>
+        <div class="flex gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <span>{dateFormatter.format(entry.data.pubDate)}</span>
+          &bull;
+          <span>{remarkPluginFrontmatter.minutesToRead}</span>
+        </div>
+      </header>
+      {
+        entry.data.podcast && (
+          <div>
+            <AudioPlayer
+              src={`/assets/podcasts/${entry.slug}.mp3`}
+              client:only="react"
+            />
+          </div>
+        )
+      }
+      <nav class="space-y-2" aria-label="Table of contents">
+        <TableOfContents {toc} />
+      </nav>
+    </div>
+    <Content />
+  </article>
+  <Footer />
+</BaseLayout>

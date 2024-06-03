@@ -1,0 +1,342 @@
+---
+title: Generating artificial podcasts from articles with OpenAI's TTS model
+description: Exploring possible use of OpenAI's tts model for generating automatic "podcasts" for blog posts. I looked into why would anyone want to do that and how I made it.
+tags:
+  - ai
+  - podcast
+  - cli
+  - programming
+pubDate: 2024-05-29
+slug: generating-artificial-podcasts-from-articles-with-openai-tts-model
+podcast: true
+---
+
+import Caption from "../../components/Caption.astro";
+import CodeSnippet from "../../components/CodeSnippet.astro";
+
+## Introduction
+
+Who doesn't like podcasts? Well, certainly not me! That's why in today's article I'll explore how you can use OpenAI's TTS API to generate podcasts from your articles. Before we start, let's briefly break down the problem.
+
+- I write my articles in MDX, so I can't just pass them to the TTS API. They need to be transformed into “tts-compatible” input, which doesn't have frontmatter, JSX elements like code snippets, JavaScript imports, etc.
+
+- OpenAI's TTS API input accepts strings at most 4096 characters long, so in case of longer articles, we need to break them into sections, generate an audio file for each, and join them together to get the final podcast.
+
+- The process of generating podcasts should be quick and simple. We want a CLI tool that lists modified or new articles and lets us pick the ones for which we want to generate a podcast.
+
+Note: while this post contains code snippets it's not a tutorial. If you want to implement a similar feature on your site and find something confusing please look at the [full source code of the podcast package in my site's repository](https://github.com/senicko/me)!
+
+## Transforming raw MDX files into TTS input
+
+Node.js has a really good toolkit for working with a content called unified, which "compiles content to syntax trees and syntax trees to content". We ll use it to parse our MDX articles and process their ASTs. We can get started by defining the necessary types and a compileArticle function.
+
+<CodeSnippet>
+
+```ts
+import remarkFrontmatter from "remark-frontmatter";
+import remarkMDX from "remark-mdx";
+import remarkParse from "remark-parse";
+import remarkUnlink from "remark-unlink";
+import { unified } from "unified";
+import * as z from "zod";
+
+const articleFrontmatterSchema = z.object({
+  title: z.string(),
+  slug: z.string(),
+});
+
+type ArticleFrontmatter = z.infer<typeof articleFrontmatterSchema>;
+
+export type CompiledArticle = {
+  sections: Array<string>;
+  frontmatter: ArticleFrontmatter;
+};
+
+export async function compileArticle(rawMDX: string): Promise<CompiledArticle> {
+  const vfile = await unified()
+    .use(remarkParse)
+    .use(remarkMDX)
+    .use(remarkFrontmatter)
+    .use(remarkUnlink)
+    .use(ttsTransformer) // [!code highlight]
+    .use(ttsCompiler) // [!code highlight]
+    .process(rawMDX);
+
+  return vfile.result;
+}
+```
+
+<Caption slot="description">
+
+`ttsTransformer` and `ttsCompiler` are the two plugins we need to write discussed below.
+
+</Caption>
+
+</CodeSnippet>
+
+This function takes a raw MDX string and initializes a unified processor that later uses a few plugins to extract frontmatter and an array of sections.
+
+We need to write two unified plugins. A transformer, which will modify the AST produced by `remark-parse`, `remark-mdx`, `remark-frontmatter`, and `remarkUnlink`, and a compiler, which will take the AST and extract an array of sections. Let's start by writing the transformer.
+
+### Removing unreadable nodes
+
+`ttsTransformer` is our custom plugin that traverses the AST to extract the article's frontmatter, wrap headings in quotation marks, render lists with `toMarkdown` utility and remove unreadable nodes.
+
+The pre-processing of headings and lists hopefully will help us to make the TTS input less vague for the model.
+
+<CodeSnippet filename="lib.ts">
+
+```ts
+import type { Literal, Root } from "mdast";
+import { toMarkdown } from "mdast-util-to-markdown";
+import { type Plugin } from "unified";
+import { find } from "unist-util-find";
+import { convert, is } from "unist-util-is";
+import { remove } from "unist-util-remove";
+import { CONTINUE, SKIP, visit } from "unist-util-visit";
+import yaml from "yaml";
+
+const isTTS = convert([
+  "paragraph",
+  "heading",
+  "emphasis",
+  "strong",
+  "inlineCode",
+  "text",
+  "blockquote",
+]);
+
+const ttsTransformer: Plugin<[], Root> = () => {
+  return (ast, file) => {
+    visit(ast, (node, index, parent) => {
+      // Extract frontmatter
+      if (is(node, "yaml")) {
+        file.data.frontmatter = yaml.parse(node.value);
+        return CONTINUE;
+      }
+
+      // Make sure headings are wrapped in quotation marks
+      // after rendering to text
+      if (is(node, "heading")) {
+        const textNode = find<Literal>(node, { type: "text" })!;
+        textNode.value = `"${textNode.value}"`;
+      }
+
+      // Make sure lists are rendered properly as toString utility
+      // just sticks items together without any spacing
+      if (parent && index && is(node, "list")) {
+        parent.children.splice(index, 1, {
+          type: "text",
+          value: toMarkdown(node),
+        });
+
+        return SKIP;
+      }
+    });
+
+    remove(ast, (node) => !isTTS(node));
+  };
+};
+```
+
+</CodeSnippet>
+
+At the end, we remove all nodes which aren't considered "tts-compatible". How do we know if a node is or isn't "tts-compatible"? Well, I've made a list of nodes that represent text content and created `isTTS` assertion we can use when calling the `remove` utility. This assures us that the AST will contain only nodes which can be read.
+
+### Compiling AST into an array of sections
+
+Now, we can look at the `ttsCompiler` plugin. We'll attach our own custom compiler to the unified processor which will visit all of the top-level nodes, render them to string, and group them into sections.
+
+<CodeSnippet filename="lib.ts">
+
+```ts
+const ttsCompiler: Plugin<[], Root, CompiledArticle> = function () {
+  // @ts-expect-error
+  const self = this as Processor<
+    undefined,
+    undefined,
+    undefined,
+    Root,
+    CompiledArticle
+  >;
+
+  self.compiler = (ast, file) => {
+    const result = articleFrontmatterSchema.safeParse(file.data.frontmatter);
+
+    if (!result.success) {
+      throw new Error(`Parsed frontmatter is not an article frontmatter`);
+    }
+
+    const frontmatter = result.data;
+    const sections = [`"${frontmatter.title}"\n\n`];
+
+    for (const child of ast.children) {
+      const text = toString(child) + "\n\n";
+
+      if (text.length > 4096) {
+        throw new Error(
+          `${child.type} node will occupy over 4096 characters (${text.length}) after rendering which exceeds single API request limit.\n${util.inspect(child, { colors: true, compact: false, depth: null, maxStringLength: 50 })}`,
+        );
+      }
+
+      if (sections[sections.length - 1].length + text.length <= 4096) {
+        // Text content of current node
+        // fits into current section.
+        sections[sections.length - 1] += text;
+      } else {
+        // Current section doesn't have enough
+        // free space so we create a new one.
+        sections.push(text);
+      }
+    }
+
+    return {
+      sections,
+      frontmatter,
+    };
+  };
+};
+```
+
+<Caption slot="description">
+  If you are wondering about the `const self = ..` you are not alone. It's
+  really problematic to get custom unified compiler types to work in TypeScript
+  and that's a hack we have to live with.
+</Caption>
+
+</CodeSnippet>
+
+As I store my article titles in frontmatter I need to prepend them to the first section. Then, we just loop through the children nodes of the root node and append them to the current section, if its total length is smaller than 4096 characters. Otherwise, we start a new section.
+
+If a single node's text content exceeds 4096 characters I throw an error. As I plan to write short blog posts, it's almost impossible this will ever happen.
+
+### Example
+
+To show how our compiler works, let's say we have the following article for which we want to generate a podcast.
+
+<CodeSnippet>
+
+```mdx
+---
+title: Generating artificial podcasts from articles with OpenAI's tts model
+slug: generating-artificial-podcasts-from-articles-with-openai-tts-model
+---
+
+import Caption from "../../components/Caption.astro";
+import CodeSnippet from "../../components/CodeSnippet.astro";
+
+## Introduction
+
+Who doesn't like podcasts? Well, certainly not me!
+```
+
+</CodeSnippet>
+
+After calling `compileArticle` with contents of this file as `rawMDX` argument we receive the following object.
+
+<CodeSnippet>
+
+```json
+{
+  sections: [
+    "Generating artificial podcasts from articles with OpenAI's tts model\n" +
+      '\n' +
+      '"Introduction"\n' +
+      '\n' +
+      "Who doesn't like podcasts? Well, certainly not me!\n" +
+      '\n'
+  ],
+  frontmatter: {
+    title: "Generating artificial podcasts from articles with OpenAI's tts model",
+    slug: 'generating-artificial-podcasts-from-articles-with-openai-tts-model'
+  }
+}
+```
+
+</CodeSnippet>
+
+Heading and the first paragraph get merged into a single section as they don't exceed the length limit. If we would have a really long article, like this one, we probably would have another entry in the sections array.
+
+## Using OpenAI's TTS model to generate podcasts
+
+We're ready to compile an article and turn it into a podcast now. We'll use an official OpenAI client for Node.js to make things a bit simpler. Let's abstract this process into a `generatePodcast` function.
+
+<CodeSnippet>
+
+```ts
+async function generatePodcast(
+  openai: OpenAI,
+  article: CompiledArticle,
+  outDir: string,
+) {
+  const outPath = path.join(outDir, `${article.frontmatter.slug}.mp3`);
+
+  const sectionFilesPaths = await Promise.all(
+    article.sections.map(async (section, i) => {
+      const response = await openai.audio.speech.create({
+        model: "tts-1-hd",
+        voice: "echo",
+        input: section,
+      });
+
+      const sectionFilePath = path.join(
+        os.tmpdir(),
+        `${article.frontmatter.slug}-section${i}.mp3`,
+      );
+
+      await fs.writeFile(
+        sectionFilePath,
+        Buffer.from(await response.arrayBuffer()),
+      );
+
+      return sectionFilePath;
+    }),
+  );
+
+  await exec(
+    `ffmpeg -y -i "concat:${sectionFilesPaths.join("|")}" -c copy ${outPath}`,
+  );
+
+  await Promise.all(
+    sectionFilesPaths.map((path) => fs.rm(path, { force: true })),
+  );
+}
+```
+
+<Caption slot="description">
+  Note that you have to install ffmpeg on your machine to use it.
+</Caption>
+
+</CodeSnippet>
+
+This function loops through the compiled article's sections and runs the model for each one storing the output in a temporary file called `{articleSlug}-section{i}.mp3`. After generating audio files for every section we concat them into the final podcast with ffmpeg.
+
+We store the temporary files in our os [temporary directory](https://en.wikipedia.org/wiki/Temporary_folder). To keep things clean, after we're done we remove them.
+
+What's smart in this snippet is that as generating an audio file for a section is independent of other sections we can map them into a `Promise`. Running the model can take a while and making this process asynchronous makes our code significantly faster.
+
+With this function, we can generate a podcast for an article.
+
+## Caching
+
+Last but not least, I think it's worth mentioning how I figure out if an article's changed. So, my CLI tool generates `.podcasts` directory in which I create `cache.json` file. In that cache file, I store **md5 hashes of articles for which I've generated podcasts**. When I list files from my articles directory I check if the md5 hash of their current tts content matches the one stored in the cache file. If it does, I just ignore the file. Otherwise, I store the file together with any new articles. When I run the CLI, I prompt myself to choose articles from which I want to generate a podcast. It looks like this.
+
+<CodeSnippet>
+
+```
+❯ pnpm podcasts generate
+✔ listing updated articles
+? Pick articles for which you want to (re)generate podcast file. ›
+move with arrows, toggle with space, submit with return
+◯   generating-artificial-podcasts-from-articles-with-openai-tts-model
+```
+
+</CodeSnippet>
+
+At the time of writing, I update the cached md5 hash for every changed article, even if finally I don't generate a podcast from it. Maybe I'll change this behavior in the future but for now it's fine.
+
+## Final thoughts
+
+Does it even make any sense to do that? I don't know! I've spent a long time on this article as I had to figure out how unified works but I am really happy with the outcome. I think the podcast feature makes a bit more sense for non-technical posts as they don't have a lot of important code snippets.
+
+If you are still reading, or listening, I am really impressed! If you would like to support me in some way feel free to leave some bucks for a cup of coffee ️☕️.
