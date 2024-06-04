@@ -150,6 +150,9 @@ Now, we can look at the `ttsCompiler` plugin. We'll attach our own custom compil
 <CodeSnippet filename="lib.ts">
 
 ```ts
+import { toString } from "mdast-util-to-string";
+import { type Processor } from "unified";
+
 const ttsCompiler: Plugin<[], Root, CompiledArticle> = function () {
   // @ts-expect-error
   const self = this as Processor<

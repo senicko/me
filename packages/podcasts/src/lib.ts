@@ -6,7 +6,7 @@ import remarkFrontmatter from "remark-frontmatter";
 import remarkMDX from "remark-mdx";
 import remarkParse from "remark-parse";
 import remarkUnlink from "remark-unlink";
-import { Processor, unified, type Plugin } from "unified";
+import { type Processor, unified, type Plugin } from "unified";
 import { find } from "unist-util-find";
 import { convert, is } from "unist-util-is";
 import { remove } from "unist-util-remove";
